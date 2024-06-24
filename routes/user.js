@@ -1,25 +1,58 @@
 const express = require('express');
 const router = express.Router();
+const uid2 = require('uid2');
+const SHA256 = require('crypto-js/sha256');
+const encBase64 = require('crypto-js/enc-base64');
 const User = require('../models/User');
 
 // **Create**
 router.post('/user/signup', async (req, res) => {
-	console.log('route : user/signup');
-	console.log(req.body);
+	const { username, email, password, newletter } = req.body;
+
 	try {
-		const newUser = new User({
-			username: req.body.username,
-			email: req.body.email,
-			password: req.body.password,
-			newsletter: true,
-		});
+		const user = await User.findOne({ email: email });
+
+		if (user) {
+			res.status(409).json({ message: 'Mail already has an account' });
+		} else {
+			if (email && username && password) {
+				// 1) Encrypter le mdp
+				const token = uid2(64);
+				const salt = uid2(16);
+				const hash = SHA256(password + salt).toString(encBase64);
+				// 2) Créer un new User
+
+				const newUser = new User({
+					email: email,
+					account: {
+						username: username,
+					},
+					newsletter: newletter,
+					token: token,
+					hash: hash,
+					salt: salt,
+				});
+				// 3) Sauvegarder ce user dans la BDD
+				await newUser.save();
+				// 4) Répondre au client
+				res.status(200).json(newUser);
+			} else {
+				res.status(400).json({
+					message: 'Missing parameters',
+				});
+			}
+		}
+
 		await newUser.save();
 		res.json(newUser);
 	} catch (error) {
 		res.status(400).json({ message: 'pas de user crée' });
 	}
 });
-
+// LOgin
+router.post('/user/login', (req, res) => {
+	res.json('Hello login');
+});
 // **Read**
 router.get('/', async (req, res) => {
 	console.log('route : /read');
