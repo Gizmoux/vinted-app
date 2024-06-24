@@ -11,8 +11,8 @@ app.use(cors());
 // Connexion à la BDD :
 mongoose.connect('mongodb://127.0.0.1:27017/vinted-app');
 
-const route = require('./routes/route');
-app.use(route);
+const signup = require('./routes/signup');
+app.use(signup);
 
 app.listen(3000, () => {
 	console.log('Server started Vinted-app!!');
