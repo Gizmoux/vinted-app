@@ -35,23 +35,48 @@ router.post('/user/signup', async (req, res) => {
 				// 3) Sauvegarder ce user dans la BDD
 				await newUser.save();
 				// 4) Répondre au client
-				res.status(200).json(newUser);
+				res.status(200).json({
+					_id: newUser._id,
+					token: newUser.token,
+					account: newUser.account,
+				});
 			} else {
 				res.status(400).json({
 					message: 'Missing parameters',
 				});
 			}
 		}
-
-		await newUser.save();
-		res.json(newUser);
 	} catch (error) {
 		res.status(400).json({ message: 'pas de user crée' });
 	}
 });
 // LOgin
-router.post('/user/login', (req, res) => {
-	res.json('Hello login');
+router.post('/user/login', async (req, res) => {
+	try {
+		const { email, password } = req.body;
+		const user = await User.findOne({ email: email });
+		if (user) {
+			// Vérifier que le mdp est le bon
+			const hashToVerify = SHA256(password + user.salt).toString(encBase64);
+			if (hashToVerify === user.hash) {
+				res.status(200).json({
+					_id: user._id,
+					token: user.token,
+					account: user.account,
+				});
+			} else {
+				res.status(401).json({
+					message: 'Unauthorized',
+				});
+			}
+		} else {
+			res.status(401).json({
+				message: 'Unauthorized',
+			});
+		}
+	} catch (error) {
+		res.status(400).json({ message: error.message });
+	}
 });
 // **Read**
 router.get('/', async (req, res) => {
