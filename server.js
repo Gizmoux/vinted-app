@@ -18,5 +18,5 @@ app.all('*', () => {
 	console.log("Cette route n'existe pas");
 });
 app.listen(3000, () => {
-	console.log('Server started Vinted-app!!');
+	console.log('Server started Vinted-app!! sur le port 3000');
 });
