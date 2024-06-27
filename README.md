@@ -7,3 +7,7 @@
 # Connexion à la base de données
 
 - mongoose.connect('mongodb://127.0.0.1:27017/vinted-app'); (Ne pas mettre localhost)
+
+# Lancer le server
+
+- npm start
