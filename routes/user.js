@@ -13,7 +13,7 @@ router.post('/user/signup', async (req, res) => {
 		const user = await User.findOne({ email: email });
 
 		if (user) {
-			res.status(409).json({ message: 'Mail already has an account' });
+			res.status(409).json({ message: 'Le mail a déjà un compte' });
 		} else {
 			if (email && username && password) {
 				// 1) Encrypter le mdp
@@ -66,12 +66,12 @@ router.post('/user/login', async (req, res) => {
 				});
 			} else {
 				res.status(401).json({
-					message: 'Unauthorized',
+					message: 'Pas authorisé',
 				});
 			}
 		} else {
 			res.status(401).json({
-				message: 'Unauthorized',
+				message: 'Pas authorisé',
 			});
 		}
 	} catch (error) {
@@ -101,7 +101,7 @@ router.post('/update', async (req, res) => {
 			await student.save();
 			res.json(student);
 		} else {
-			res.status(400).json({ message: 'Missing parameter' });
+			res.status(400).json({ message: 'Il manque des paramètres' });
 		}
 	} catch (error) {
 		res.status(400).json({ error: error.message });
@@ -114,12 +114,12 @@ router.post('/delete', async (req, res) => {
 		if (req.fields.id) {
 			// si l'id a bien été transmis
 			// On recherche le "student" à modifier à partir de son id et on le supprime :
-			await Student.findByIdAndDelete(req.fields.id);
+			await User.findByIdAndDelete(req.fields.id);
 			// On répond au client :
-			res.json({ message: 'Student removed' });
+			res.json({ message: 'User supprimé' });
 		} else {
 			// si aucun id n'a été transmis :
-			res.status(400).json({ message: 'Missing id' });
+			res.status(400).json({ message: "Il manque l'ID" });
 		}
 	} catch (error) {
 		res.status(400).json({ error: error.message });
